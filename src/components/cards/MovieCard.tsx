@@ -5,30 +5,72 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-
 /**
  * MovieCard Component
- * 
- * Displays a movie card with an image, title, and year.
+ *
+ * Displays a movie card with an image, title, and year/release date.
  * Includes a link to edit the movie details.
  * Utilizes Next.js Image component for optimized image loading.
+ * Handles both TMDB movies and user-added movies.
  */
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
+  // Determine image source - prioritize user image, then TMDB poster, then backdrop
+  const getImageSrc = () => {
+    if (movie.image) return movie.image;
+    if (movie.poster_path)
+      return `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+    if (movie.backdrop_path)
+      return `https://image.tmdb.org/t/p/w500${movie.backdrop_path}`;
+    return "/placeholder-movie.svg"; // Placeholder image
+  };
+
+  // Determine the year - use year field or extract from release_date
+  const getYear = () => {
+    if (movie.year) return movie.year;
+    if (movie.release_date) return new Date(movie.release_date).getFullYear();
+    return null;
+  };
+
+  const year = getYear();
+
   return (
-    <div className="bg rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-      <Link href={`/edit/${movie._id}`} className="relative sm:h-60 hover:cursor-pointer">
+    <div className="bg rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 h-full flex flex-col">
+      <Link
+        href={`/edit/${movie._id}`}
+        className="relative hover:cursor-pointer flex-shrink-0"
+      >
         <Image
-          src={movie.image}
+          src={getImageSrc()}
           alt={`Cover image for ${movie.title}`}
           width={300}
-          height={100}
-          className="rounded-t-lg h-[400px] w-[266px] object-cover"
+          height={400}
+          className="rounded-t-lg h-[300px] w-full object-cover"
           priority
         />
       </Link>
-      <div className="p-4">
-        <h2 className="body-large">{movie.title}</h2>
-        {movie.year && <p className="text-gray-400">{movie.year}</p>}
+      <div className="p-4 flex flex-col flex-grow">
+        <h2 className="body-large font-semibold line-clamp-2 mb-2">{movie.title}</h2>
+        {year && <p className="text-gray-400 text-sm mb-2">{year}</p>}
+        {movie.overview && (
+          <p
+            className="text-gray-500 text-sm flex-grow overflow-hidden"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+            }}
+          >
+            {movie.overview}
+          </p>
+        )}
+        {movie.vote_average && (
+          <div className="flex items-center mt-auto pt-2">
+            <span className="text-yellow-400 mr-1">⭐</span>
+            <span className="text-sm text-gray-400">
+              {movie.vote_average.toFixed(1)}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -36,7 +78,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
 /**
  * Memoized MovieCard Component
- * 
+ *
  * Prevents unnecessary re-renders if the movie prop hasn't changed.
  */
 export default React.memo(MovieCard);

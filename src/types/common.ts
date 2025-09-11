@@ -31,9 +31,19 @@ export interface AuthResponse {
  */
 export interface Movie {
   _id?: string;
-  image: string;
+  id?: number; // TMDB id
+  image?: string; // User-added image
   title: string;
   year?: number | string;
+  overview?: string; // TMDB description
+  popularity?: number; // TMDB popularity
+  release_date?: string; // TMDB release date
+  poster_path?: string; // TMDB poster
+  backdrop_path?: string; // TMDB backdrop
+  vote_average?: number; // TMDB rating
+  vote_count?: number; // TMDB vote count
+  link?: string; // User-added link
+  userId?: string; // User who added the movie
 }
 
 /**

@@ -33,7 +33,10 @@ export default function Page() {
 
     try {
       const res = await fetch(`/api/movies/${id}`);
-      const data: { data: Movie } = await res.json(); 
+      const data: { data: Movie } = await res.json();
+      if (!data || !data.data.image) {
+        throw new Error("Movie data is undefined");
+      }
       if (res.ok) {
         setFormData({
           title: data.data.title,

@@ -12,10 +12,39 @@ interface PaginationProps {
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handlePageChange }) => {
   const t = useTranslations("Movie");
 
-  // Memoize the array of page numbers to prevent unnecessary computations
+  // Generate smart pagination with ellipsis
   const pages = useMemo(() => {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }, [totalPages]);
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+
+    // Always show first page
+    range.push(1);
+
+    // Add pages around current page
+    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+      range.push(i);
+    }
+
+    // Always show last page if there are multiple pages
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    // Add ellipsis where needed
+    let prev = 0;
+    for (const i of range) {
+      if (i - prev === 2) {
+        rangeWithDots.push(prev + 1);
+      } else if (i - prev !== 1) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(i);
+      prev = i;
+    }
+
+    return rangeWithDots;
+  }, [currentPage, totalPages]);
 
   // Handlers for previous and next buttons, memoized with useCallback
   const handlePrevious = useCallback(() => {
@@ -51,21 +80,25 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
         </li>
 
         {/* Page Number Buttons */}
-        {pages.map((pageNumber) => (
-          <li key={pageNumber}>
-            <button
-              type="button"
-              className={`px-4 py-2 mx-1 rounded-md transition-colors duration-200 ${
-                currentPage === pageNumber
-                  ? "bg-primary text-white"
-                  : "bg-card text-white hover:bg-[#2BD17E] hover:text-white"
-              }`}
-              onClick={() => handlePageChange(pageNumber)}
-              aria-current={currentPage === pageNumber ? "page" : undefined}
-              aria-label={`Page ${pageNumber}`}
-            >
-              {pageNumber}
-            </button>
+        {pages.map((pageNumber, index) => (
+          <li key={`${pageNumber}-${index}`}>
+            {pageNumber === '...' ? (
+              <span className="px-4 py-2 mx-1 text-gray-400">...</span>
+            ) : (
+              <button
+                type="button"
+                className={`px-4 py-2 mx-1 rounded-md transition-colors duration-200 ${
+                  currentPage === pageNumber
+                    ? "bg-primary text-white"
+                    : "bg-card text-white hover:bg-[#2BD17E] hover:text-white"
+                }`}
+                onClick={() => handlePageChange(pageNumber as number)}
+                aria-current={currentPage === pageNumber ? "page" : undefined}
+                aria-label={`Page ${pageNumber}`}
+              >
+                {pageNumber}
+              </button>
+            )}
           </li>
         ))}
 
