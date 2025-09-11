@@ -1,0 +1,19 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Block access to API routes
+Disallow: /api/
+
+# Block access to authentication pages
+Disallow: /*/sign-in
+Disallow: /*/sign-up
+
+# Block access to edit pages (private user content)
+Disallow: /*/edit/
+
+# Allow access to public movie listings
+Allow: /*/movies
+
+# Sitemap location (if you add one later)
+# Sitemap: https://yourdomain.com/sitemap.xml
