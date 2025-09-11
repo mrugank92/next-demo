@@ -7,10 +7,14 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Movie } from "@/types/common";
+import { useMovieById } from "@/hooks/useMovies";
+import { useMovieMutations } from "@/hooks/useMovieMutations";
 
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
+  const { updateMovie } = useMovieMutations();
+  const { movie, isLoading: movieLoading, isError } = useMovieById(id as string);
   const [formData, setFormData] = useState<Movie>({
     title: "",
     year: 2024,
@@ -22,40 +26,17 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const t = useTranslations("Add");
 
-  /**
-   * Fetch movie data based on the ID from the URL.
-   */
-  const fetchMovies = async () => {
-    if (!id) {
-      console.error("No movie ID found in the URL.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/movies/${id}`);
-      const data: { data: Movie } = await res.json();
-      if (!data || !data.data.image) {
-        throw new Error("Movie data is undefined");
-      }
-      if (res.ok) {
-        setFormData({
-          title: data.data.title,
-          year: data.data.year && parseInt(data.data.year?.toString()),
-          image: data.data.image,
-        });
-        setImagePreview(data.data.image);
-      } else {
-        throw new Error("Failed to fetch movie data");
-      }
-    } catch (error) {
-      console.error("Error fetching movie data:", error);
-    }
-  };
-
+  // Update form data when movie data is loaded
   useEffect(() => {
-    fetchMovies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Added 'id' as a dependency
+    if (movie) {
+      setFormData({
+        title: movie.title,
+        year: movie.year && parseInt(movie.year?.toString()),
+        image: movie.image,
+      });
+      setImagePreview(movie.image || null);
+    }
+  }, [movie]);
 
   /**
    * Handles changes in text input fields.
@@ -134,28 +115,38 @@ export default function Page() {
       const formDataToSend = {
         ...formData,
         image: base64Image || formData.image,
-        year: formData.year && parseInt(formData.year.toString(), 10), // Convert year to number
+        year: formData.year && parseInt(formData.year.toString(), 10),
       };
 
-      const res = await fetch(`/api/movies/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formDataToSend),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to submit the form");
-      }
-
-      router.push("/"); // Redirect to the homepage after successful update
+      await updateMovie(id as string, formDataToSend);
+      router.push("/");
     } catch (error) {
       console.error("Error submitting form:", error);
+      setImageError("Failed to update movie. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (movieLoading) {
+    return (
+      <div className="containers pe-3 ps-3">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !movie) {
+    return (
+      <div className="containers pe-3 ps-3">
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500">Failed to load movie data</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="containers pe-3 ps-3">

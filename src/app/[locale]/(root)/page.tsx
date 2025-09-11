@@ -1,12 +1,14 @@
-import DashBoard from '@/components/Dashboard'
-import Header from '@/components/Header'
-import React from 'react'
+import DashBoard from "@/components/Dashboard";
+import Header from "@/components/Header";
+import React from "react";
 
-export default function page() {
+export default async function page() {
+  // Fetch initial movie data server-side
+
   return (
-    <div >
+    <div>
       <Header />
       <DashBoard />
     </div>
-  )
+  );
 }

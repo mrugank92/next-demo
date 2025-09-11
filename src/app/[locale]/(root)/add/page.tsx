@@ -6,10 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Movie } from "@/types/common";
+import { useMovieMutations } from "@/hooks/useMovieMutations";
 
 export default function Page() {
-//   const { id } = useParams();
   const router = useRouter();
+  const { createMovie } = useMovieMutations();
   const [formData, setFormData] = useState<Movie>({
     title: "",
     year: 2024,
@@ -108,24 +109,14 @@ export default function Page() {
       const formDataToSend = {
         ...formData,
         image: base64Image,
-        year: formData.year && parseInt(formData.year.toString(), 10), // Convert year to number
+        year: formData.year && parseInt(formData.year.toString(), 10),
       };
 
-      const res = await fetch("/api/movies", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formDataToSend),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to submit the form");
-      }
+      await createMovie(formDataToSend);
       router.push("/");
     } catch (error) {
       console.log("Error submitting form:", error);
-      // Optionally, set an error state here to inform the user
+      setImageError("Failed to create movie. Please try again.");
     } finally {
       setLoading(false);
     }

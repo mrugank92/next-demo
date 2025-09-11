@@ -3,7 +3,8 @@
 import { MovieCardProps } from "@/types/common";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { useMovieMutations } from "@/hooks/useMovieMutations";
 
 /**
  * MovieCard Component
@@ -14,6 +15,9 @@ import React from "react";
  * Handles both TMDB movies and user-added movies.
  */
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
+  const { deleteMovie } = useMovieMutations();
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Determine image source - prioritize user image, then TMDB poster, then backdrop
   const getImageSrc = () => {
     if (movie.image) return movie.image;
@@ -33,8 +37,43 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   const year = getYear();
 
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!confirm("Are you sure you want to delete this movie?")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteMovie(movie._id as string);
+    } catch (error) {
+      console.error("Failed to delete movie:", error);
+      alert("Failed to delete movie. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <div className="bg rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 h-full flex flex-col">
+    <div className="bg rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 h-full flex flex-col relative">
+      {/* Delete Button */}
+      <button
+        onClick={handleDelete}
+        disabled={isDeleting}
+        className="absolute top-2 right-2 z-10 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-full p-2 transition-colors duration-200"
+        aria-label="Delete movie"
+      >
+        {isDeleting ? (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        )}
+      </button>
+
       <Link
         href={`/edit/${movie._id}`}
         className="relative hover:cursor-pointer flex-shrink-0"

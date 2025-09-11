@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import Footer from "@/components/Footer";
 import StoreProvider from "@/redux/StoreProvider";
+import SwrProvider from "@/providers/SwrProvider";
 import React from "react";
 
 /**
@@ -53,7 +54,9 @@ export default async function RootLayout({ children, params }: any) {
       <body className={`${montserrat.className} flex flex-col min-h-screen w-full`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <StoreProvider>
-            <main className="flex-grow">{children}</main>
+            <SwrProvider>
+              <main className="flex-grow">{children}</main>
+            </SwrProvider>
           </StoreProvider>
         </NextIntlClientProvider>
         <footer>
