@@ -50,19 +50,6 @@ export default async function RootLayout({ children, params }: any) {
 
   return (
     <html lang={locale}>
-      <head>
-        {/* Preconnect to external domains for better performance */}
-        <link rel="preconnect" href="https://image.tmdb.org" />
-        <link rel="dns-prefetch" href="https://image.tmdb.org" />
-        {process.env.AWS_URL && (
-          <>
-            <link rel="preconnect" href={`https://${process.env.AWS_URL}`} />
-            <link rel="dns-prefetch" href={`https://${process.env.AWS_URL}`} />
-          </>
-        )}
-        {/* Preload critical CSS */}
-        <link rel="preload" href="/globals.css" as="style" />
-      </head>
       <body className={`${montserrat.className} flex flex-col min-h-screen w-full`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <StoreProvider>
