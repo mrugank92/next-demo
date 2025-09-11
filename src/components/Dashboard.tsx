@@ -24,19 +24,34 @@ export default function DashBoard() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center px-6 py-36 overflow-hidden">
+      <section
+        className="flex flex-col justify-center items-center px-6 py-36 overflow-hidden"
+        aria-label="Loading movies"
+        role="status"
+      >
         <Loading />
-      </div>
+        <span className="visually-hidden">
+          Loading your movie collection...
+        </span>
+      </section>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex flex-col justify-center items-center px-6 py-36 overflow-hidden">
-        <p className="text-red-500">
+      <section
+        className="flex flex-col justify-center items-center px-6 py-36 overflow-hidden"
+        aria-label="Error loading movies"
+        role="alert"
+      >
+        <p className="text-red-500" id="error-message">
           {error?.message || "Failed to load movies"}
         </p>
-      </div>
+        <span className="visually-hidden">
+          An error occurred while loading your movies. Please try refreshing the
+          page.
+        </span>
+      </section>
     );
   }
 
@@ -45,19 +60,40 @@ export default function DashBoard() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center px-6">
+    <section
+      className="flex flex-col justify-center items-center px-3 sm:px-4 md:px-6"
+      aria-labelledby="movies-heading"
+    >
       <div className="w-full max-w-5xl">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {movies.map((movie) => (
-            <MovieCard key={movie._id} movie={movie} />
+        <h2 id="movies-heading" className="visually-hidden">
+          Your Movie Collection
+        </h2>
+        <div
+          className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          role="grid"
+          aria-label={`Movie grid showing ${movies.length} movies`}
+        >
+          {movies.map((movie, index) => (
+            <div
+              key={movie._id}
+              className="fc-stagger-item"
+              style={{
+                animationDelay: `${index * 50}ms`,
+              }}
+              role="gridcell"
+            >
+              <MovieCard movie={movie} />
+            </div>
           ))}
         </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        handlePageChange={setCurrentPage}
-      />
-    </div>
+      <nav aria-label="Movie collection pagination">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={setCurrentPage}
+        />
+      </nav>
+    </section>
   );
 }

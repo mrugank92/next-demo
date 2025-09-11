@@ -4,17 +4,56 @@ import React from "react";
 
 /**
  * Loading Component
- * 
- * A simple loading spinner using SVG to indicate loading states.
- * Adheres to accessibility standards and optimizes performance.
+ *
+ * Enhanced loading spinner with Firecrawl-inspired design and multiple sizes.
+ * Supports accessibility standards and optimized performance with reduced motion.
  */
-const Loading: React.FC = () => {
+
+interface LoadingProps {
+  size?: "small" | "medium" | "large";
+  variant?: "spinner" | "pulse";
+  className?: string;
+}
+
+const Loading: React.FC<LoadingProps> = ({
+  size = "medium",
+  variant = "spinner",
+  className = "",
+}) => {
+  const sizeClasses = {
+    small: "w-4 h-4",
+    medium: "w-8 h-8",
+    large: "w-16 h-16",
+  };
+
+  const containerClasses = `flex justify-center items-center h-full ${className}`;
+  const spinnerClasses = `${sizeClasses[size]} text-gray-200 fill-blue-600`;
+
+  if (variant === "pulse") {
+    return (
+      <div className={containerClasses}>
+        <div role="status" aria-live="polite" aria-label="Loading">
+          <div
+            className={`${sizeClasses[size]} bg-blue-600 rounded-full animate-pulse`}
+            style={{
+              animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            }}
+          />
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center h-full">
+    <div className={containerClasses}>
       <div role="status" aria-live="polite" aria-label="Loading">
         <svg
           aria-hidden="true"
-          className="w-16 h-16 text-gray-200 animate-spin fill-blue-600"
+          className={`${spinnerClasses} animate-spin`}
+          style={{
+            animation: "spin 1s linear infinite",
+          }}
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

@@ -8,7 +8,7 @@ import { setUser } from "@/redux/features/userSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
-import { AuthResponse } from "@/types/common"; 
+import { AuthResponse } from "@/types/common";
 
 /**
  * Interface for form data state
@@ -21,7 +21,7 @@ interface FormData {
 
 /**
  * SignInForm Component
- * 
+ *
  * Handles user authentication by capturing email and password inputs,
  * sending a sign-in request, handling responses, and managing authentication tokens.
  */
@@ -89,7 +89,9 @@ const SignInForm: React.FC = () => {
         } catch (err) {
           console.error("Login Error:", err);
           if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || "An error occurred during login.");
+            setError(
+              err.response?.data?.message || "An error occurred during login."
+            );
           } else {
             setError("An unexpected error occurred during login.");
           }
@@ -100,12 +102,15 @@ const SignInForm: React.FC = () => {
   );
 
   return (
-    <div className="w-full max-w-sm mx-auto mt-8 p-4 rounded-md">
+    <div>
       <form className="space-y-6" onSubmit={handleLogin} noValidate>
         {/* Email Field */}
-        <div>
-          <label htmlFor="email" className="sr-only">
-            Email
+        <div className="fc-form-group">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Email Address
           </label>
           <input
             id="email"
@@ -113,17 +118,23 @@ const SignInForm: React.FC = () => {
             type="email"
             value={formData.email}
             onChange={handleInputChange}
-            placeholder="Email"
+            placeholder="admin@school.com"
             required
-            className="input-field"
+            className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+              error ? "border-red-500" : ""
+            }`}
             aria-required="true"
             aria-invalid={!!error}
+            aria-describedby={error ? "email-error" : undefined}
           />
         </div>
 
         {/* Password Field */}
-        <div>
-          <label htmlFor="password" className="sr-only">
+        <div className="fc-form-group">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Password
           </label>
           <input
@@ -132,55 +143,96 @@ const SignInForm: React.FC = () => {
             type="password"
             value={formData.password}
             onChange={handleInputChange}
-            placeholder="Password"
+            placeholder="••••••••••"
             required
-            className="input-field"
+            className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
+              error ? "border-red-500" : ""
+            }`}
             aria-required="true"
             aria-invalid={!!error}
+            aria-describedby={error ? "password-error" : undefined}
           />
         </div>
 
-        {/* Remember Me and SignUp Link */}
-        <div className="flex justify-between">
-          <div className="flex items-center gap-2">
+        {/* Remember Me and Forgot Password */}
+        <div className="flex items-center justify-between">
+          <label className="flex items-center">
             <input
               id="remember-me"
               name="rememberMe"
               type="checkbox"
               checked={formData.rememberMe}
               onChange={handleInputChange}
-              className="h-4 w-4 appearance-none bg-input checked:bg-green-500 rounded checked:border-transparent cursor-pointer"
+              className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2"
               aria-label="Remember me"
             />
-            <label htmlFor="remember-me" className="body-small">
-              Remember me
-            </label>
-          </div>
-          <Link
-            href="/sign-up"
-            className="body-small hover:underline hover:text-green-500"
-          >
-            Sign Up
-          </Link>
+            <span className="ml-2 text-sm text-gray-700">Remember me</span>
+          </label>
+          <span className="text-sm text-emerald-600 hover:text-emerald-500 cursor-pointer">
+            Forgot password?
+          </span>
         </div>
 
         {/* Error Message */}
         {error && (
-          <p className="text-red-400 text-sm mt-3" role="alert">
+          <div
+            className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm"
+            role="alert"
+            id="email-error"
+          >
             {error}
-          </p>
+          </div>
         )}
 
         {/* Submit Button */}
-        <div>
+        <div className="fc-form-group">
           <button
             type="submit"
-            className="custom-button py-3 hover:bg-green-500"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isPending}
             aria-busy={isPending}
           >
-            {isPending ? "Logging in..." : "Login"}
+            {isPending ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
+        </div>
+
+        {/* Sign Up Link */}
+        <div className="text-center">
+          <span className="text-sm text-gray-600">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/sign-up"
+              className="font-medium text-emerald-600 hover:text-emerald-500"
+            >
+              Sign up
+            </Link>
+          </span>
         </div>
       </form>
     </div>

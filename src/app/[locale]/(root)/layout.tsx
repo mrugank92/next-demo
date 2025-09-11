@@ -8,6 +8,7 @@ import { getMessages } from "next-intl/server";
 import Footer from "@/components/Footer";
 import StoreProvider from "@/redux/StoreProvider";
 import SwrProvider from "@/providers/SwrProvider";
+import PageTransition from "@/components/PageTransition";
 import React from "react";
 
 /**
@@ -38,28 +39,46 @@ export const metadata: Metadata = {
 
 /**
  * RootLayout Component
- * 
+ *
  * Serves as the root layout for the application, wrapping all pages.
  * Incorporates internationalization, global state management, and consistent theming.
  */
 export default async function RootLayout({ children, params }: any) {
   const { locale } = await params;
-  
 
   // Fetch localized messages based on the current locale
   const messages = await getMessages({ locale });
 
   return (
     <html lang={locale}>
-      <body className={`${montserrat.className} flex flex-col min-h-screen w-full`}>
+      <body
+        className={`${montserrat.className} flex flex-col min-h-screen w-full`}
+      >
+        {/* Skip Links for Accessibility */}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <a href="#footer" className="skip-link">
+          Skip to footer
+        </a>
+
         <NextIntlClientProvider locale={locale} messages={messages}>
           <StoreProvider>
             <SwrProvider>
-              <main className="flex-grow">{children}</main>
+              <main
+                id="main-content"
+                className="flex-grow"
+                role="main"
+                aria-label="Main content"
+              >
+                <PageTransition>
+                  <div className="fc-container">{children}</div>
+                </PageTransition>
+              </main>
             </SwrProvider>
           </StoreProvider>
         </NextIntlClientProvider>
-        <footer>
+        <footer id="footer" role="contentinfo" aria-label="Site footer">
           <Footer />
         </footer>
       </body>

@@ -9,7 +9,11 @@ interface PaginationProps {
   handlePageChange: (pageNumber: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handlePageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  handlePageChange,
+}) => {
   const t = useTranslations("Movie");
 
   // Generate smart pagination with ellipsis
@@ -22,7 +26,11 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
     range.push(1);
 
     // Add pages around current page
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
       range.push(i);
     }
 
@@ -37,7 +45,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
       if (i - prev === 2) {
         rangeWithDots.push(prev + 1);
       } else if (i - prev !== 1) {
-        rangeWithDots.push('...');
+        rangeWithDots.push("...");
       }
       rangeWithDots.push(i);
       prev = i;
@@ -60,41 +68,74 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
   }, [currentPage, totalPages, handlePageChange]);
 
   return (
-    <nav className="flex flex-col items-center m-28 relative z-10 w-full" aria-label="Pagination">
-      <ul className="flex flex-wrap justify-center gap-2">
+    <nav
+      className="flex flex-col items-center mt-8 sm:mt-12 md:mt-16 lg:mt-20 relative z-10 w-full px-4"
+      aria-label="Pagination"
+    >
+      <ul className="flex flex-wrap justify-center gap-1 sm:gap-2">
         {/* Previous Button */}
         <li>
           <button
             type="button"
-            className={`text-white font-bold px-4 py-2 rounded-l-md transition-colors duration-200 ${
-              currentPage === 1
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[#2BD17E]"
-            }`}
+            className={`
+              fc-button-hover text-white font-semibold 
+              px-3 py-3 sm:px-4 sm:py-3 md:px-5 md:py-4 rounded-l-md 
+              transition-all duration-300 transform-gpu origin-center
+              min-w-touch-target min-h-touch-target
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              ${
+                currentPage === 1
+                  ? "bg-gray-400 opacity-50 cursor-not-allowed"
+                  : "bg-gray-600 cursor-pointer hover:bg-green-500 hover:scale-105 hover:shadow-md"
+              }
+            `}
+            style={{
+              fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)",
+            }}
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            aria-label={t("pervious")}
+            aria-label={`${t("pervious")} page`}
           >
-            {t("pervious")}
+            <span className="hidden sm:inline">{t("pervious")}</span>
+            <span className="sm:hidden">‹</span>
           </button>
         </li>
 
         {/* Page Number Buttons */}
         {pages.map((pageNumber, index) => (
           <li key={`${pageNumber}-${index}`}>
-            {pageNumber === '...' ? (
-              <span className="px-4 py-2 mx-1 text-gray-400">...</span>
+            {pageNumber === "..." ? (
+              <span
+                className="px-2 py-3 sm:px-4 sm:py-3 md:px-5 md:py-4 mx-1 text-gray-400 flex items-center justify-center min-w-touch-target min-h-touch-target"
+                style={{
+                  fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)",
+                }}
+                aria-hidden="true"
+              >
+                ...
+              </span>
             ) : (
               <button
                 type="button"
-                className={`px-4 py-2 mx-1 rounded-md transition-colors duration-200 ${
-                  currentPage === pageNumber
-                    ? "bg-primary text-white"
-                    : "bg-card text-white hover:bg-[#2BD17E] hover:text-white"
-                }`}
+                className={`
+                  fc-button-hover px-2 py-3 sm:px-4 sm:py-3 md:px-5 md:py-4 mx-1 rounded-md 
+                  transition-all duration-300 transform-gpu origin-center text-white
+                  min-w-touch-target min-h-touch-target
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  ${
+                    currentPage === pageNumber
+                      ? "bg-green-500 font-semibold scale-105 shadow-md"
+                      : "bg-gray-700 font-medium hover:bg-green-500 hover:scale-105 hover:shadow-md"
+                  }
+                `}
+                style={{
+                  fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)",
+                }}
                 onClick={() => handlePageChange(pageNumber as number)}
                 aria-current={currentPage === pageNumber ? "page" : undefined}
-                aria-label={`Page ${pageNumber}`}
+                aria-label={`${
+                  currentPage === pageNumber ? "Current page, " : ""
+                }Page ${pageNumber}`}
               >
                 {pageNumber}
               </button>
@@ -106,16 +147,27 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
         <li>
           <button
             type="button"
-            className={`body-regular px-4 py-2 rounded-r-md transition-colors duration-200 ${
-              currentPage === totalPages
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[#2BD17E]"
-            }`}
+            className={`
+              fc-button-hover body-regular font-semibold 
+              px-3 py-3 sm:px-4 sm:py-3 md:px-5 md:py-4 rounded-r-md 
+              transition-all duration-300 transform-gpu origin-center text-white
+              min-w-touch-target min-h-touch-target
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              ${
+                currentPage === totalPages
+                  ? "bg-gray-400 opacity-50 cursor-not-allowed"
+                  : "bg-gray-600 cursor-pointer hover:bg-green-500 hover:scale-105 hover:shadow-md"
+              }
+            `}
+            style={{
+              fontSize: "clamp(0.75rem, 2.5vw, 0.875rem)",
+            }}
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            aria-label={t("next")}
+            aria-label={`${t("next")} page`}
           >
-            {t("next")}
+            <span className="hidden sm:inline">{t("next")}</span>
+            <span className="sm:hidden">›</span>
           </button>
         </li>
       </ul>
