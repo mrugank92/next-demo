@@ -23,7 +23,7 @@ interface TmdbResponse {
 }
 
 async function fetchTmdbPage(page: number): Promise<TmdbResponse> {
-  const apiKey = "f5ca00cfc404fd46770e0515aab10f1c";
+  const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) throw new Error("TMDB_API_KEY not set");
 
   const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=${page}`;

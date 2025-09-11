@@ -1,9 +1,9 @@
-# NEXT-MOVIES
+# NEXT-DEMO
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.0.1-blue.svg)
 ![License: Public](https://img.shields.io/badge/License-Public-brightgreen.svg)
 
-**NEXT-MOVIES** is a dynamic web application built with [Next.js](https://nextjs.org) that allows users to manage and explore a collection of movies. Featuring user authentication, CRUD operations, and internationalization, NEXT-MOVIES offers a seamless experience for movie enthusiasts.
+**NEXT-DEMO** is a dynamic web application built with [Next.js](https://nextjs.org) that allows users to manage and explore a collection of movies. Featuring user authentication, CRUD operations, and internationalization, NEXT-DEMO offers a seamless experience for movie enthusiasts.
 
 ## 📋 Table of Contents
 
@@ -27,16 +27,19 @@
 ### Installation
 
 1. **Clone the Repository:**
+
    ```bash
-   git clone https://github.com/nikshita-elem/movie-next.git
+   git clone https://github.com/mrugank92/next-demo
    ```
 
 2. **Navigate to the Project Directory:**
+
    ```bash
-   cd movie-next
+   cd next-demo
    ```
 
 3. **Install Dependencies:**
+
    ```bash
    npm install
    # or
@@ -48,13 +51,13 @@
    ```
 
 4. **Configure Environment Variables:**
+
    - Rename `.env.example` to `.env`:
      ```bash
      cp .env.example .env
      ```
    - Update the `.env` file with your actual configuration values.
    - **Note:** For actual env details, please contact the repository owner.
-
 
 5. **Run the Development Server:**
    ```bash
@@ -70,16 +73,13 @@
 
 ## 🚀 Live Demo
 
-- **Repository:** [GitHub Repo](https://github.com/nikshita-elem/movie-next)
-- **Live Application:** [Access Live Demo](https://main.d26xp8fwnikeye.amplifyapp.com/)
+- **Repository:** [GitHub Repo](https://github.com/mrugank92/next-demo)
+- **Live Application:** [Access Live Demo](https://next-demo-eight-kappa.vercel.app/en)
 
-Domain Credentials:
- - **Username:** `movies`
-  - **Password:** `movies@2024`
+Default Login Credentials:
 
-Default Login Credentials: 
-  - **Username:** `user@gmail.com`
-  - **Password:** `mymovies`
+- **Username:** `user@gmail.com`
+- **Password:** `mymovies`
 
 ## ✨ Features
 
@@ -114,10 +114,3 @@ Detailed API endpoints and usage instructions can be found in our [Swagger Docum
 
 ![Homepage](https://movies-image.s3.ap-south-1.amazonaws.com/uploads/1732097887908_Screenshot%202024-11-20%20at%203.33.23%E2%80%AFPM.png)
 ![Add Movie](https://movies-image.s3.ap-south-1.amazonaws.com/uploads/1732098042282_Screenshot%20from%202024-11-20%2015-50-26.png)
-
-## 📫 Contact
-
-For any inquiries or support, please contact:
-
-- [nikshita@elemensissoftech.com](mailto:nikshita@elemensissoftech.com)
-- [Upwork](https://www.upwork.com/freelancers/~01ddd3c811eb950818?viewMode=1)
