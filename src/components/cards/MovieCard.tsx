@@ -2,8 +2,8 @@
 
 import { MovieCardProps } from "@/types/common";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
+import { Link } from "@/i18n/routing";
 import { useMovieMutations } from "@/hooks/useMovieMutations";
 
 /**
@@ -66,9 +66,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       }}
     >
       <Link
-        href={`/edit/${movie._id}`}
+        href={`/movie/${movie._id}`}
         className="relative block hover:cursor-pointer flex-shrink-0 group min-h-touch-target"
-        aria-label={`Edit ${movie.title || "movie"}`}
+        aria-label={`View details for ${movie.title || "movie"}`}
       >
         <div className="relative aspect-[3/4] w-full overflow-hidden">
           {/* Loading skeleton */}
@@ -122,21 +122,29 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         <h2 className="line-clamp-2 mb-2 text-lg font-semibold leading-tight text-gray-900">
           {movie.title}
         </h2>
-        
+
         <div className="flex items-center gap-4 mb-3 text-sm text-gray-500">
           {year && (
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                <path
+                  fillRule="evenodd"
+                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                  clipRule="evenodd"
+                />
               </svg>
               {year}
             </span>
           )}
-          
+
           {movie.runtime && (
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clipRule="evenodd"
+                />
               </svg>
               {movie.runtime}m
             </span>
@@ -150,7 +158,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
               {movie.genres.slice(0, 3).map((genre, index) => (
                 <span
                   key={`${genre.id}-${index}`}
-                  className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                  className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full"
                 >
                   {genre.name}
                 </span>
@@ -168,8 +176,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         {movie.directors && movie.directors.length > 0 && (
           <div className="mb-3 text-xs text-gray-600">
             <span className="font-medium">Director: </span>
-            {movie.directors.slice(0, 2).map(d => d.name).join(", ")}
-            {movie.directors.length > 2 && ` +${movie.directors.length - 2} more`}
+            {movie.directors
+              .slice(0, 2)
+              .map((d) => d.name)
+              .join(", ")}
+            {movie.directors.length > 2 &&
+              ` +${movie.directors.length - 2} more`}
           </div>
         )}
 
@@ -177,8 +189,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         {movie.credits?.cast && movie.credits.cast.length > 0 && (
           <div className="mb-3 text-xs text-gray-600">
             <span className="font-medium">Cast: </span>
-            {movie.credits.cast.slice(0, 3).map(actor => actor.name).join(", ")}
-            {movie.credits.cast.length > 3 && ` +${movie.credits.cast.length - 3} more`}
+            {movie.credits.cast
+              .slice(0, 3)
+              .map((actor) => actor.name)
+              .join(", ")}
+            {movie.credits.cast.length > 3 &&
+              ` +${movie.credits.cast.length - 3} more`}
           </div>
         )}
 
@@ -187,7 +203,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             {movie.overview}
           </p>
         )}
-        
+
         <div className="flex items-center justify-between mt-auto pt-2">
           <div className="flex items-center gap-3">
             {movie.vote_average && movie.vote_average > 0 && (
@@ -200,27 +216,44 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                 </div>
                 {movie.vote_count && (
                   <span className="text-xs text-gray-500">
-                    ({movie.vote_count > 1000 ? `${(movie.vote_count / 1000).toFixed(1)}k` : movie.vote_count})
+                    (
+                    {movie.vote_count > 1000
+                      ? `${(movie.vote_count / 1000).toFixed(1)}k`
+                      : movie.vote_count}
+                    )
                   </span>
                 )}
               </div>
             )}
-            
-            {movie.popularity && movie.popularity > 0 && (
-              <div className="flex items-center gap-1 text-xs text-gray-500">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                {movie.popularity > 1000 ? `${(movie.popularity / 1000).toFixed(1)}k` : Math.round(movie.popularity)}
-              </div>
-            )}
           </div>
-          
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className={`
-              flex items-center gap-1 px-2 py-1 rounded transition-all duration-200 
+
+          <div className="flex items-center gap-1">
+            <Link
+              href={`/edit/${movie._id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 px-2 py-1 rounded transition-all duration-200 text-xs font-medium text-blue-500 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              aria-label={`Edit ${movie.title || "movie"}`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </Link>
+
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className={`
+              flex items-center rounded transition-all duration-200 
               text-xs font-medium
               focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1
               ${
@@ -229,38 +262,37 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                   : "text-red-500 hover:text-red-600 hover:bg-red-50"
               }
             `}
-            role="button"
-            aria-label={`Delete ${movie.title || "movie"}`}
-          >
-            {isDeleting ? (
-              <>
-                <span>Deleting</span>
-                <div
-                  className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent"
-                  role="status"
-                  aria-label="Deleting movie"
-                ></div>
-              </>
-            ) : (
-              <>
-                <span>Delete</span>
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </>
-            )}
-          </button>
+              role="button"
+              aria-label={`Delete ${movie.title || "movie"}`}
+            >
+              {isDeleting ? (
+                <>
+                  <div
+                    className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent"
+                    role="status"
+                    aria-label="Deleting movie"
+                  ></div>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

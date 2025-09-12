@@ -20,7 +20,9 @@ export function middleware(request: NextRequest) {
 
   // Authentication logic
   if (!authToken) {
-    if (protectedPaths.has(url.pathname) || url.pathname.startsWith('/en/edit') || url.pathname.startsWith('/es/edit') || url.pathname.startsWith('/hi/edit')) {
+    if (protectedPaths.has(url.pathname) || 
+        url.pathname.startsWith('/en/edit') || url.pathname.startsWith('/es/edit') || url.pathname.startsWith('/hi/edit') ||
+        url.pathname.startsWith('/en/movie') || url.pathname.startsWith('/es/movie') || url.pathname.startsWith('/hi/movie')) {
       url.pathname = "/sign-in";
       return NextResponse.redirect(url);
     }
