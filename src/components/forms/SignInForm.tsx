@@ -81,6 +81,12 @@ const SignInForm: React.FC = () => {
             });
 
             // Dispatch user information to Redux store
+            setCookie("userId", user._id, {
+              path: "/",
+              maxAge: 60 * 60 * 24, // 1 day
+              sameSite: "strict",
+              secure: process.env.NODE_ENV === "production",
+            });
             dispatch(setUser({ userId: user._id, email: user.email }));
 
             // Navigate to the home page

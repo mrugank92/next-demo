@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMovieById } from "@/hooks/useMovies";
+import { getCookie } from "cookies-next";
 
 interface MovieDetailProps {
   movieId: string;
@@ -12,6 +13,11 @@ interface MovieDetailProps {
 const MovieDetail: React.FC<MovieDetailProps> = ({ movieId }) => {
   const { movie, isLoading, error, isError } = useMovieById(movieId);
   const router = useRouter();
+
+  // Get current user from Redux store
+
+  // Check if current user owns this movie
+  const isOwner = movie?.userId === getCookie("userId");
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "Unknown";
@@ -169,18 +175,23 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ movieId }) => {
 
                   {/* Quick Actions */}
                   <div className="flex gap-2 mb-6">
-                    <Link
-                      href={`/edit/${movie._id}`}
-                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
-                    >
-                      Edit
-                    </Link>
+                    {/* Only show edit button if current user owns this movie */}
+                    {isOwner && (
+                      <Link
+                        href={`/edit/${movie._id}`}
+                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                      >
+                        Edit
+                      </Link>
+                    )}
                     {movie.link && (
                       <a
                         href={movie.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center"
+                        className={`${
+                          isOwner ? "flex-1" : "w-full"
+                        } px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-center`}
                       >
                         Watch
                       </a>

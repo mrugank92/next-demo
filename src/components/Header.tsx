@@ -171,8 +171,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               showFilters
-                ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-green-400 text-white border-2 border-green-500"
+                : "bg-green-400 text-white hover:bg-green-300"
             }`}
           >
             <svg
@@ -202,7 +202,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               <Languages />
               <button
                 onClick={handleLogout}
-                className="flex items-center cursor-pointer gap-1 sm:gap-2 px-2 py-2 sm:px-3 sm:py-2 rounded-lg transition-all duration-200 ease-in-out hover:shadow-sm focus-ring hover:outline-green-300 min-h-touch-target"
+                className="flex items-center cursor-pointer gap-1 sm:gap-2 px-2 py-2 sm:px-3 sm:py-2 rounded-lg transition-all duration-200 ease-in-out hover:shadow-sm focus-ring min-h-touch-target"
               >
                 <span className="body-regular hidden sm:inline text-xs sm:text-sm whitespace-nowrap">
                   Logout
@@ -346,8 +346,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 className="w-full"
               />
             </div>
-
-
           </div>
         </div>
       )}
