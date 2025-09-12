@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { Link } from "@/i18n/routing";
 import { useMovieMutations } from "@/hooks/useMovieMutations";
 import { getCookie } from "cookies-next";
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { toast } from "react-toastify";
 
 /**
  * MovieCard Component
@@ -20,6 +22,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Check if current user owns this movie
   const isOwner = movie.userId === getCookie("userId");
@@ -44,23 +47,34 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   const year = getYear();
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setShowDeleteModal(true);
+  };
 
-    if (!confirm("Are you sure you want to delete this movie?")) {
-      return;
-    }
-
+  const handleDeleteConfirm = async () => {
     setIsDeleting(true);
     try {
       await deleteMovie(movie._id as string);
+      toast.success("Movie deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setShowDeleteModal(false);
     } catch (error) {
       console.error("Failed to delete movie:", error);
-      alert("Failed to delete movie. Please try again.");
+      toast.error("Failed to delete movie. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
   };
 
   return (
@@ -258,7 +272,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                 </Link>
 
                 <button
-                  onClick={handleDelete}
+                  onClick={handleDeleteClick}
                   disabled={isDeleting}
                   className={`
                   flex items-center rounded transition-all duration-200 
@@ -305,6 +319,18 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Movie"
+        message={`Are you sure you want to delete "${movie.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        variant="danger"
+      />
     </div>
   );
 };

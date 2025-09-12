@@ -19,7 +19,7 @@ export function useMovieMutations() {
       }
 
       const result = await response.json();
-      
+
       // Revalidate all movie list pages
       await mutate(
         (key) => typeof key === "string" && key.startsWith("/api/movies?page="),
@@ -36,7 +36,7 @@ export function useMovieMutations() {
   const updateMovie = async (id: string, movieData: Partial<Movie>) => {
     try {
       const response = await fetch(`/api/movies/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,11 +44,13 @@ export function useMovieMutations() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update movie");
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || "Failed to update movie";
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
-      
+
       // Revalidate specific movie and all movie list pages
       await mutate(`/api/movies/${id}`, result, { revalidate: false });
       await mutate(

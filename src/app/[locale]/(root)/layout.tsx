@@ -3,12 +3,14 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "../../globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import Footer from "@/components/Footer";
 import StoreProvider from "@/redux/StoreProvider";
 import SwrProvider from "@/providers/SwrProvider";
 import PageTransition from "@/components/PageTransition";
+import { ToastContainer } from "react-toastify";
 import React from "react";
 
 /**
@@ -81,6 +83,18 @@ export default async function RootLayout({ children, params }: any) {
         <footer id="footer" role="contentinfo" aria-label="Site footer">
           <Footer />
         </footer>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );
