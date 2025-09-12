@@ -166,7 +166,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={currentPage === totalPages}
             aria-label={`${t("next")} page`}
           >
-            <span className="hidden sm:inline">{t("next")}</span>
+            <span className="hidden sm:inline text-white">{t("next")}</span>
             <span className="sm:hidden">›</span>
           </button>
         </li>

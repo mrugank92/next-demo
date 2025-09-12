@@ -40,6 +40,14 @@ const movieSchema = new Schema(
       type: String,
       required: true,
     },
+    runtime: {
+      type: Number,
+      default: null,
+    },
+    genres: [{
+      id: Number,
+      name: String,
+    }],
     poster_path: {
       type: String,
       default: null,
@@ -55,6 +63,35 @@ const movieSchema = new Schema(
     vote_count: {
       type: Number,
       required: true,
+    },
+    credits: {
+      cast: [{
+        id: Number,
+        name: String,
+        character: String,
+        order: Number,
+        profile_path: String,
+      }],
+      crew: [{
+        id: Number,
+        name: String,
+        job: String,
+        department: String,
+        profile_path: String,
+      }],
+    },
+    directors: [{
+      id: Number,
+      name: String,
+      job: String,
+      department: String,
+      profile_path: String,
+    }],
+    images: Schema.Types.Mixed,
+    videos: Schema.Types.Mixed,
+    lastSyncedAt: {
+      type: Date,
+      default: Date.now,
     },
     // Keep the original fields for user-added movies
     image: {

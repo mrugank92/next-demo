@@ -24,7 +24,7 @@ export default function page() {
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">MovieFlix</h1>
+              <h1 className="text-2xl font-bold text-white">Movie</h1>
               <p className="text-green-200 text-sm">Cinema Management System</p>
             </div>
           </div>
@@ -34,7 +34,7 @@ export default function page() {
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg
-                  className="w-5 h-5 text-emerald-300"
+                  className="w-5 h-5 text-white"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -55,7 +55,7 @@ export default function page() {
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg
-                  className="w-5 h-5 text-green-300"
+                  className="w-5 h-5 text-white"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -76,7 +76,7 @@ export default function page() {
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg
-                  className="w-5 h-5 text-teal-300"
+                  className="w-5 h-5 text-white"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -115,7 +115,7 @@ export default function page() {
             </div>
           </div>
           <p className="text-green-300 text-sm mt-4">
-            <span className="font-semibold">1000+</span> movies trust MovieFlix
+            <span className="font-semibold">1000+</span> movies trust Movie
             worldwide
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function page() {
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">MovieFlix</h1>
+              <h1 className="text-xl font-bold text-gray-900">Movie</h1>
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export default function page() {
             </h2>
             <p className="text-gray-600">
               Sign in to your{" "}
-              <span className="font-semibold text-emerald-600">MovieFlix</span>{" "}
+              <span className="font-semibold text-emerald-600">Movie</span>{" "}
               account to continue
             </p>
           </div>

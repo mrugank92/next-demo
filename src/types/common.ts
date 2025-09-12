@@ -38,10 +38,41 @@ export interface Movie {
   overview?: string; // TMDB description
   popularity?: number; // TMDB popularity
   release_date?: string; // TMDB release date
+  runtime?: number; // Movie runtime in minutes
+  genres?: { // TMDB genres
+    id: number;
+    name: string;
+  }[];
   poster_path?: string; // TMDB poster
   backdrop_path?: string; // TMDB backdrop
   vote_average?: number; // TMDB rating
   vote_count?: number; // TMDB vote count
+  credits?: { // TMDB cast and crew
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      order: number;
+      profile_path: string | null;
+    }[];
+    crew: {
+      id: number;
+      name: string;
+      job: string;
+      department: string;
+      profile_path: string | null;
+    }[];
+  };
+  directors?: { // Extracted directors for convenience
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+    profile_path: string | null;
+  }[];
+  images?: any; // TMDB images
+  videos?: any; // TMDB videos
+  lastSyncedAt?: Date; // Last sync timestamp
   link?: string; // User-added link
   userId?: string; // User who added the movie
 }

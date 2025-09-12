@@ -65,51 +65,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         willChange: "transform", // Optimize animation performance
       }}
     >
-      {/* Delete Button */}
-      <button
-        onClick={handleDelete}
-        disabled={isDeleting}
-        className={`
-          absolute top-2 right-2 sm:top-3 sm:right-3 z-10 
-          rounded-full p-2 transition-all duration-200 
-          min-w-touch-target min-h-touch-target 
-          flex items-center justify-center
-          text-white shadow-md
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-          ${
-            isDeleting
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-red-500 cursor-pointer hover:bg-red-600 hover:shadow-lg hover:scale-110"
-          }
-        `}
-        role="button"
-        aria-label={`Delete ${movie.title || "movie"}`}
-        aria-describedby={`delete-help-${movie._id}`}
-      >
-        {isDeleting ? (
-          <div
-            className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
-            role="status"
-            aria-label="Deleting movie"
-          ></div>
-        ) : (
-          <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        )}
-      </button>
-
       <Link
         href={`/edit/${movie._id}`}
         className="relative block hover:cursor-pointer flex-shrink-0 group min-h-touch-target"
@@ -167,24 +122,146 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         <h2 className="line-clamp-2 mb-2 text-lg font-semibold leading-tight text-gray-900">
           {movie.title}
         </h2>
-        {year && (
-          <p className="mb-2 text-sm font-medium text-gray-400 leading-normal">
-            {year}
-          </p>
+        
+        <div className="flex items-center gap-4 mb-3 text-sm text-gray-500">
+          {year && (
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+              </svg>
+              {year}
+            </span>
+          )}
+          
+          {movie.runtime && (
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+              </svg>
+              {movie.runtime}m
+            </span>
+          )}
+        </div>
+
+        {/* Genres */}
+        {movie.genres && movie.genres.length > 0 && (
+          <div className="mb-3">
+            <div className="flex flex-wrap gap-1">
+              {movie.genres.slice(0, 3).map((genre, index) => (
+                <span
+                  key={`${genre.id}-${index}`}
+                  className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                >
+                  {genre.name}
+                </span>
+              ))}
+              {movie.genres.length > 3 && (
+                <span className="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                  +{movie.genres.length - 3}
+                </span>
+              )}
+            </div>
+          </div>
         )}
+
+        {/* Directors */}
+        {movie.directors && movie.directors.length > 0 && (
+          <div className="mb-3 text-xs text-gray-600">
+            <span className="font-medium">Director: </span>
+            {movie.directors.slice(0, 2).map(d => d.name).join(", ")}
+            {movie.directors.length > 2 && ` +${movie.directors.length - 2} more`}
+          </div>
+        )}
+
+        {/* Cast */}
+        {movie.credits?.cast && movie.credits.cast.length > 0 && (
+          <div className="mb-3 text-xs text-gray-600">
+            <span className="font-medium">Cast: </span>
+            {movie.credits.cast.slice(0, 3).map(actor => actor.name).join(", ")}
+            {movie.credits.cast.length > 3 && ` +${movie.credits.cast.length - 3} more`}
+          </div>
+        )}
+
         {movie.overview && (
           <p className="flex-grow overflow-hidden mb-3 line-clamp-3 text-sm font-normal text-gray-600 leading-normal">
             {movie.overview}
           </p>
         )}
-        {movie.vote_average && (
-          <div className="flex items-center mt-auto pt-2">
-            <span className="mr-2 text-yellow-400 text-base">⭐</span>
-            <span className="text-sm font-medium text-gray-600">
-              {movie.vote_average.toFixed(1)}
-            </span>
+        
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex items-center gap-3">
+            {movie.vote_average && movie.vote_average > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="flex items-center">
+                  <span className="text-yellow-400 text-base">⭐</span>
+                  <span className="text-sm font-semibold text-gray-800 ml-1">
+                    {movie.vote_average.toFixed(1)}
+                  </span>
+                </div>
+                {movie.vote_count && (
+                  <span className="text-xs text-gray-500">
+                    ({movie.vote_count > 1000 ? `${(movie.vote_count / 1000).toFixed(1)}k` : movie.vote_count})
+                  </span>
+                )}
+              </div>
+            )}
+            
+            {movie.popularity && movie.popularity > 0 && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {movie.popularity > 1000 ? `${(movie.popularity / 1000).toFixed(1)}k` : Math.round(movie.popularity)}
+              </div>
+            )}
           </div>
-        )}
+          
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`
+              flex items-center gap-1 px-2 py-1 rounded transition-all duration-200 
+              text-xs font-medium
+              focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1
+              ${
+                isDeleting
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-600 hover:bg-red-50"
+              }
+            `}
+            role="button"
+            aria-label={`Delete ${movie.title || "movie"}`}
+          >
+            {isDeleting ? (
+              <>
+                <span>Deleting</span>
+                <div
+                  className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent"
+                  role="status"
+                  aria-label="Deleting movie"
+                ></div>
+              </>
+            ) : (
+              <>
+                <span>Delete</span>
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

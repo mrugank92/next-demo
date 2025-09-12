@@ -1,5 +1,4 @@
 import DashBoard from "@/components/Dashboard";
-import Header from "@/components/Header";
 import React from "react";
 
 export default async function page() {
@@ -7,7 +6,6 @@ export default async function page() {
 
   return (
     <div className="fc-page-container">
-      <Header />
       <section
         className="fc-main-content"
         aria-labelledby="main-heading"

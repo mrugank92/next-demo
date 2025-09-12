@@ -22,23 +22,16 @@ export function useMovies(options: UseMoviesOptions = {}) {
     refreshInterval = 0,
     revalidateOnFocus = true,
     revalidateOnReconnect = true,
-    initialData,
   } = options;
 
-  const { data, error, isLoading, mutate, isValidating } = useSWR<FetchMoviesResponse>(
-    `/api/movies?page=${page}`,
-    {
+  const { data, error, isLoading, mutate, isValidating } =
+    useSWR<FetchMoviesResponse>(`/api/movies?page=${page}`, {
       refreshInterval,
       revalidateOnFocus,
       revalidateOnReconnect,
-      // Revalidate immediately on mount
       revalidateIfStale: true,
-      // Keep previous data while loading new data
       keepPreviousData: true,
-      // Use server-side initial data for SSR
-      fallbackData: initialData,
-    }
-  );
+    });
 
   return {
     movies: data?.data || [],

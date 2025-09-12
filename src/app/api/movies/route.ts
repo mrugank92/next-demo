@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = 8;
+    const pageSize = 10;
     await connectMongoDB();
 
     // Get both TMDB movies (no userId) and user-specific movies

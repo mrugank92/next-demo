@@ -1,92 +1,135 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// scripts/fetchMoviesWithDetails.ts
+
+import dotenv from "dotenv";
 import connectMongoDB from "@/libs/dbConnect";
 import Movie from "@/models/movie";
-import axios from "axios";
 
-interface TmdbMovie {
+// Load environment variables
+dotenv.config({ path: ".env.local" });
+
+interface TmdbMovieBasic {
+  id: number;
+  title: string;
+}
+
+interface TmdbListResponse {
+  page: number;
+  results: TmdbMovieBasic[];
+  total_pages: number;
+}
+
+interface TmdbMovieDetails {
   id: number;
   title: string;
   overview: string;
   popularity: number;
   release_date: string;
+  runtime: number | null;
+  genres: { id: number; name: string }[];
   poster_path: string | null;
   backdrop_path: string | null;
   vote_average: number;
   vote_count: number;
-  // add more fields from TMDB as needed
+
+  credits?: {
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      order: number;
+      profile_path: string | null;
+    }[];
+    crew: {
+      id: number;
+      name: string;
+      job: string;
+      department: string;
+      profile_path: string | null;
+    }[];
+  };
+  images?: any;
+  videos?: any;
 }
 
-interface TmdbResponse {
-  page: number;
-  results: TmdbMovie[];
-  total_pages: number;
-  total_results: number;
-}
-
-async function fetchTmdbPage(page: number): Promise<TmdbResponse> {
+async function fetchMovieList(page: number): Promise<TmdbListResponse> {
   const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) throw new Error("TMDB_API_KEY not set");
 
   const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=${page}`;
-  const res = await axios.get(url);
-  if (res.status !== 200) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed fetching movie list page ${page}`);
+  return (await res.json()) as TmdbListResponse;
+}
+
+async function fetchMovieDetails(id: number): Promise<TmdbMovieDetails> {
+  const apiKey = process.env.TMDB_API_KEY;
+  const url = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits,images,videos`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.error(`HTTP ${res.status} for movie ${id}: ${res.statusText}`);
     throw new Error(
-      `TMDB fetch failed for page ${page}: ${res.status} ${res.statusText}`
+      `Failed fetching details for movie ${id} - HTTP ${res.status}`
     );
   }
-  const data = res.data as TmdbResponse;
-  return data;
+  return (await res.json()) as TmdbMovieDetails;
 }
 
 async function run() {
   await connectMongoDB();
 
-  // fetch first page to know total_pages
-  const first = await fetchTmdbPage(1);
-
+  // Debug: Check if API key is loaded
+  if (!process.env.TMDB_API_KEY) {
+    console.error("TMDB_API_KEY environment variable is not set");
+    process.exit(1);
+  }
   console.log(
-    `Total pages: ${first.total_pages}, total results: ${first.total_results}`
+    "API Key loaded:",
+    process.env.TMDB_API_KEY?.substring(0, 8) + "..."
   );
 
-  // process page 1
-  for (const movie of first.results) {
-    try {
-      await Movie.findOneAndUpdate({ id: movie.id }, movie, {
-        upsert: true,
-        new: true,
-      });
-    } catch (e) {
-      console.error(`Error inserting/updating movie ${movie.id}:`, e);
-    }
-  }
+  const firstPage = await fetchMovieList(1);
+  const totalPages = firstPage.total_pages;
 
-  // fetch remaining pages
-  const maxPages = first.total_pages;
-  for (let p = 2; p <= maxPages; p++) {
-    try {
-      console.log(`Fetching page ${p} / ${maxPages}`);
-      const pageData = await fetchTmdbPage(p);
-      for (const movie of pageData.results) {
-        try {
-          await Movie.findOneAndUpdate({ id: movie.id }, movie, {
-            upsert: true,
-            new: true,
-          });
-        } catch (e) {
-          console.error(
-            `Error inserting/updating movie ${movie.id} on page ${p}:`,
-            e
-          );
-        }
+  console.log(`Total pages: ${totalPages}`);
+
+  for (let page = 1; page <= totalPages; page++) {
+    console.log(`Fetching list page ${page}...`);
+    const list = page === 1 ? firstPage : await fetchMovieList(page);
+
+    for (const movie of list.results) {
+      try {
+        console.log(`Fetching details for: ${movie.title} (${movie.id})`);
+        const details = await fetchMovieDetails(movie.id);
+
+        // Optional: Extract director(s) for convenience
+        const directors =
+          details.credits?.crew.filter((c) => c.job === "Director") ?? [];
+
+        await Movie.updateOne(
+          { id: details.id },
+          {
+            $set: {
+              ...details,
+              directors,
+              lastSyncedAt: new Date(),
+            },
+          },
+          { upsert: true }
+        );
+      } catch (err) {
+        console.error(`Error processing movie ${movie.id}:`, err);
       }
-    } catch (e) {
-      console.error(`Error fetching page ${p}:`, e);
+
+      // TMDB free tier has rate limits → add delay (e.g. 500ms per call)
+      await new Promise((res) => setTimeout(res, 500));
     }
   }
 
-  console.log("Done fetching and storing movies.");
+  console.log("Done syncing movies with full details!");
 }
 
 run().catch((err) => {
-  console.error("Run failed:", err);
+  console.error("Fatal error:", err);
   process.exit(1);
 });
