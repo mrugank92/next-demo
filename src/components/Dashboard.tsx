@@ -17,8 +17,7 @@ export default function DashBoard() {
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [minRating, setMinRating] = useState<number>(0);
   const [maxRuntime, setMaxRuntime] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<string>("title");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   // Use SWR with server-side initial data
@@ -26,9 +25,9 @@ export default function DashBoard() {
     page: currentPage,
   });
 
-  // Filter and sort movies based on current filters
+  // Filter movies based on current filters (no sorting)
   const filteredAndSortedMovies = useMemo(() => {
-    const filtered = movies.filter((movie) => {
+    return movies.filter((movie) => {
       // Search term filter
       if (
         searchTerm &&
@@ -70,49 +69,6 @@ export default function DashBoard() {
 
       return true;
     });
-
-    // Sort movies
-    filtered.sort((a, b) => {
-      let aValue: string | number, bValue: string | number;
-
-      switch (sortBy) {
-        case "title":
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-          break;
-        case "year":
-          aValue =
-            a.year ||
-            (a.release_date ? new Date(a.release_date).getFullYear() : 0);
-          bValue =
-            b.year ||
-            (b.release_date ? new Date(b.release_date).getFullYear() : 0);
-          break;
-        case "rating":
-          aValue = a.vote_average || 0;
-          bValue = b.vote_average || 0;
-          break;
-        case "popularity":
-          aValue = a.popularity || 0;
-          bValue = b.popularity || 0;
-          break;
-        case "runtime":
-          aValue = a.runtime || 0;
-          bValue = b.runtime || 0;
-          break;
-        default:
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-      }
-
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-      } else {
-        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-      }
-    });
-
-    return filtered;
   }, [
     movies,
     searchTerm,
@@ -120,8 +76,6 @@ export default function DashBoard() {
     selectedYear,
     minRating,
     maxRuntime,
-    sortBy,
-    sortOrder,
   ]);
 
   const totalPages = useMemo(
@@ -183,10 +137,7 @@ export default function DashBoard() {
           setMinRating={setMinRating}
           maxRuntime={maxRuntime}
           setMaxRuntime={setMaxRuntime}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
+
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           setCurrentPage={setCurrentPage}

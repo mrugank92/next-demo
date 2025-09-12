@@ -19,10 +19,7 @@ interface DashboardHeaderProps {
   setMinRating: (rating: number) => void;
   maxRuntime: number;
   setMaxRuntime: (runtime: number) => void;
-  sortBy: string;
-  setSortBy: (sort: string) => void;
-  sortOrder: "asc" | "desc";
-  setSortOrder: (order: "asc" | "desc") => void;
+
   showFilters: boolean;
   setShowFilters: (show: boolean) => void;
   setCurrentPage: (page: number) => void;
@@ -41,10 +38,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   setMinRating,
   maxRuntime,
   setMaxRuntime,
-  sortBy,
-  setSortBy,
-  sortOrder,
-  setSortOrder,
+
   showFilters,
   setShowFilters,
   setCurrentPage,
@@ -85,8 +79,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     setSelectedYear("");
     setMinRating(0);
     setMaxRuntime(0);
-    setSortBy("title");
-    setSortOrder("asc");
+
     setCurrentPage(1);
   };
 
@@ -283,7 +276,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       {/* Filters Panel */}
       {showFilters && (
         <div className="bg-gray-50 rounded-lg p-6 mb-6 border border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Genre Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -354,34 +347,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             </div>
 
-            {/* Sort Options */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
-              <div className="flex gap-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="title">Title</option>
-                  <option value="year">Year</option>
-                  <option value="rating">Rating</option>
-                  <option value="popularity">Popularity</option>
-                  <option value="runtime">Runtime</option>
-                </select>
-                <button
-                  onClick={() =>
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                  }
-                  className="px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  title={sortOrder === "asc" ? "Ascending" : "Descending"}
-                >
-                  {sortOrder === "asc" ? "↑" : "↓"}
-                </button>
-              </div>
-            </div>
+
           </div>
         </div>
       )}
