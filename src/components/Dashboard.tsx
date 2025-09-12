@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import MovieCard from "./cards/MovieCard";
 import Pagination from "./Pagination";
 import Loading from "./Loading";
@@ -8,7 +8,7 @@ import EmptyDashboard from "./EmptyDashboard";
 import DashboardHeader from "./Header";
 import { useMovies } from "@/hooks/useMovies";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 15;
 
 export default function DashBoard() {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,6 +24,20 @@ export default function DashBoard() {
   const { movies, totalData, isLoading, isError, error } = useMovies({
     page: currentPage,
   });
+
+  // Reset to page 1 when any filter changes (only if filters become active)
+  useEffect(() => {
+    const hasFilters =
+      searchTerm.trim() !== "" ||
+      selectedGenre !== "" ||
+      selectedYear !== "" ||
+      minRating > 0 ||
+      maxRuntime > 0;
+
+    if (hasFilters) {
+      setCurrentPage(1);
+    }
+  }, [searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
 
   // Filter movies based on current filters (no sorting)
   const filteredAndSortedMovies = useMemo(() => {
@@ -69,14 +83,18 @@ export default function DashBoard() {
 
       return true;
     });
-  }, [
-    movies,
-    searchTerm,
-    selectedGenre,
-    selectedYear,
-    minRating,
-    maxRuntime,
-  ]);
+  }, [movies, searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
+
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return (
+      searchTerm.trim() !== "" ||
+      selectedGenre !== "" ||
+      selectedYear !== "" ||
+      minRating > 0 ||
+      maxRuntime > 0
+    );
+  }, [searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
 
   const totalPages = useMemo(
     () => Math.ceil(totalData / PAGE_SIZE),
@@ -137,7 +155,6 @@ export default function DashBoard() {
           setMinRating={setMinRating}
           maxRuntime={maxRuntime}
           setMaxRuntime={setMaxRuntime}
-
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           setCurrentPage={setCurrentPage}
@@ -192,13 +209,16 @@ export default function DashBoard() {
         )}
       </div>
 
-      <nav aria-label="Movie collection pagination">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          handlePageChange={setCurrentPage}
-        />
-      </nav>
+      {/* Only show pagination when no filters are active */}
+      {!hasActiveFilters && (
+        <nav aria-label="Movie collection pagination">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={setCurrentPage}
+          />
+        </nav>
+      )}
     </section>
   );
 }

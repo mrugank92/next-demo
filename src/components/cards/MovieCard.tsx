@@ -26,7 +26,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
   // Check if current user owns this movie
   const isOwner = movie.userId === getCookie("userId");
-  console.log("- Is owner?", isOwner);
 
   // Determine image source - prioritize user image, then TMDB poster, then backdrop
   const getImageSrc = () => {

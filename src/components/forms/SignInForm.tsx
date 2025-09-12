@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
 import { AuthResponse } from "@/types/common";
+import { toast } from "react-toastify";
 
 /**
  * Interface for form data state
@@ -88,6 +89,19 @@ const SignInForm: React.FC = () => {
               secure: process.env.NODE_ENV === "production",
             });
             dispatch(setUser({ userId: user._id, email: user.email }));
+
+            // Show welcome back toast
+            toast.success(
+              "Welcome back! You have been successfully signed in.",
+              {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
 
             // Navigate to the home page
             router.replace("/");
@@ -174,9 +188,6 @@ const SignInForm: React.FC = () => {
             />
             <span className="ml-2 text-sm text-gray-700">Remember me</span>
           </label>
-          <span className="text-sm text-emerald-600 hover:text-emerald-500 cursor-pointer">
-            Forgot password?
-          </span>
         </div>
 
         {/* Error Message */}

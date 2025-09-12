@@ -3,12 +3,9 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState, useCallback, useTransition } from "react";
-import { setCookie } from "cookies-next";
 import Link from "next/link";
-import { setUser } from "@/redux/features/userSlice";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
 import { AuthResponse } from "@/types/common";
+import { toast } from "react-toastify";
 
 /**
  * Interface for form data state
@@ -28,7 +25,6 @@ interface FormData {
  */
 const SignUpForm: React.FC = () => {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -78,21 +74,23 @@ const SignUpForm: React.FC = () => {
           });
 
           if (response.status === 200) {
-            const { token, user } = response.data.data;
+            // Show success toast
+            toast.success(
+              "Registration completed successfully! Please sign in to continue.",
+              {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
 
-            // Set authentication token as a cookie
-            setCookie("token", token, {
-              path: "/",
-              maxAge: 60 * 60 * 24, // 1 day
-              sameSite: "strict",
-              secure: process.env.NODE_ENV === "production",
-            });
-
-            // Dispatch user information to Redux store
-            dispatch(setUser({ userId: user._id, email: user.email }));
-
-            // Navigate to the home page
-            router.replace("/");
+            // Navigate to the sign-in page
+            setTimeout(() => {
+              router.replace("/sign-in");
+            }, 1000); // Small delay to ensure toast is visible
           }
         } catch (err) {
           console.error("Sign Up Error:", err);
@@ -106,7 +104,7 @@ const SignUpForm: React.FC = () => {
         }
       });
     },
-    [formData, dispatch, router]
+    [formData, router]
   );
 
   return (
