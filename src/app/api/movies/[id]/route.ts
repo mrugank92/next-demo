@@ -162,7 +162,7 @@ import {
 // GET Handler: Retrieve a Movie by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<any> }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<GetMovieResponse>> {
   try {
     // Authenticate the user
@@ -218,8 +218,38 @@ export async function GET(
 
     logger.info(`Movie found successfully for ID: ${id}`);
 
-    return formatResponse<any>(
-      { message: "Movie found.", success: true, data: movie },
+    // Transform movie to ensure proper serialization
+    const transformedMovie = {
+      _id: movie._id.toString(),
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      release_date: movie.release_date,
+      runtime: movie.runtime,
+      genres: movie.genres?.map((genre: { id: number; name: string }) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
+      poster_path: movie.poster_path,
+      backdrop_path: movie.backdrop_path,
+      vote_average: movie.vote_average,
+      vote_count: movie.vote_count,
+      credits: movie.credits,
+      directors: movie.directors,
+      images: movie.images,
+      videos: movie.videos,
+      lastSyncedAt: movie.lastSyncedAt?.toISOString(),
+      image: movie.image,
+      year: movie.year,
+      link: movie.link,
+      userId: movie.userId?.toString(),
+      createdAt: movie.createdAt?.toISOString(),
+      updatedAt: movie.updatedAt?.toISOString(),
+    };
+
+    return formatResponse(
+      { message: "Movie found.", success: true, data: transformedMovie },
       200
     );
   } catch (error) {
@@ -234,7 +264,7 @@ export async function GET(
 // PATCH Handler: Update a Movie by ID
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<any> }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<UpdateMovieResponse>> {
   try {
     // Authenticate the user
@@ -316,11 +346,41 @@ export async function PATCH(
       );
     }
 
-    return formatResponse<any>(
+    // Transform updated movie to ensure proper serialization
+    const transformedUpdatedMovie = {
+      _id: updatedMovie._id.toString(),
+      id: updatedMovie.id,
+      title: updatedMovie.title,
+      overview: updatedMovie.overview,
+      popularity: updatedMovie.popularity,
+      release_date: updatedMovie.release_date,
+      runtime: updatedMovie.runtime,
+      genres: updatedMovie.genres?.map((genre: any) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
+      poster_path: updatedMovie.poster_path,
+      backdrop_path: updatedMovie.backdrop_path,
+      vote_average: updatedMovie.vote_average,
+      vote_count: updatedMovie.vote_count,
+      credits: updatedMovie.credits,
+      directors: updatedMovie.directors,
+      images: updatedMovie.images,
+      videos: updatedMovie.videos,
+      lastSyncedAt: updatedMovie.lastSyncedAt?.toISOString(),
+      image: updatedMovie.image,
+      year: updatedMovie.year,
+      link: updatedMovie.link,
+      userId: updatedMovie.userId?.toString(),
+      createdAt: updatedMovie.createdAt?.toISOString(),
+      updatedAt: updatedMovie.updatedAt?.toISOString(),
+    };
+
+    return formatResponse(
       {
         message: "Movie updated successfully.",
         success: true,
-        data: updatedMovie,
+        data: transformedUpdatedMovie,
       },
       200
     );
@@ -336,7 +396,7 @@ export async function PATCH(
 // DELETE Handler: Delete a Movie by ID
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<any> }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<DeleteMovieResponse>> {
   try {
     // Authenticate the user
@@ -390,11 +450,41 @@ export async function DELETE(
       );
     }
 
-    return formatResponse<any>(
+    // Transform deleted movie to ensure proper serialization
+    const transformedDeletedMovie = {
+      _id: deletedMovie._id.toString(),
+      id: deletedMovie.id,
+      title: deletedMovie.title,
+      overview: deletedMovie.overview,
+      popularity: deletedMovie.popularity,
+      release_date: deletedMovie.release_date,
+      runtime: deletedMovie.runtime,
+      genres: deletedMovie.genres?.map((genre: any) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
+      poster_path: deletedMovie.poster_path,
+      backdrop_path: deletedMovie.backdrop_path,
+      vote_average: deletedMovie.vote_average,
+      vote_count: deletedMovie.vote_count,
+      credits: deletedMovie.credits,
+      directors: deletedMovie.directors,
+      images: deletedMovie.images,
+      videos: deletedMovie.videos,
+      lastSyncedAt: deletedMovie.lastSyncedAt?.toISOString(),
+      image: deletedMovie.image,
+      year: deletedMovie.year,
+      link: deletedMovie.link,
+      userId: deletedMovie.userId?.toString(),
+      createdAt: deletedMovie.createdAt?.toISOString(),
+      updatedAt: deletedMovie.updatedAt?.toISOString(),
+    };
+
+    return formatResponse(
       {
         message: "Movie deleted successfully.",
         success: true,
-        data: deletedMovie,
+        data: transformedDeletedMovie,
       },
       200
     );

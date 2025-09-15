@@ -9,6 +9,7 @@ import StoreProvider from "@/redux/StoreProvider";
 import SwrProvider from "@/providers/SwrProvider";
 import PageTransition from "@/components/PageTransition";
 import { ToastContainer } from "react-toastify";
+import { BaseErrorBoundary } from "@/components/error-boundaries";
 import React from "react";
 
 /**
@@ -63,20 +64,22 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         </a>
 
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <StoreProvider>
-            <SwrProvider>
-              <main
-                id="main-content"
-                className="flex-grow"
-                role="main"
-                aria-label="Main content"
-              >
-                <PageTransition>
-                  <div className="fc-container">{children}</div>
-                </PageTransition>
-              </main>
-            </SwrProvider>
-          </StoreProvider>
+          <BaseErrorBoundary>
+            <StoreProvider>
+              <SwrProvider>
+                <main
+                  id="main-content"
+                  className="flex-grow"
+                  role="main"
+                  aria-label="Main content"
+                >
+                  <PageTransition>
+                    <div className="fc-container">{children}</div>
+                  </PageTransition>
+                </main>
+              </SwrProvider>
+            </StoreProvider>
+          </BaseErrorBoundary>
         </NextIntlClientProvider>
         <footer id="footer" role="contentinfo" aria-label="Site footer">
           <Footer />

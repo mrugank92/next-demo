@@ -54,7 +54,8 @@ export async function GET(req: NextRequest) {
     const movies = await Movie.find({})
       .skip(skip)
       .limit(pageSize)
-      .sort({ _id: -1 });
+      .sort({ _id: -1 })
+      .lean();
 
     if (!movies || movies.length === 0) {
       return NextResponse.json(
@@ -63,9 +64,40 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Transform movies to ensure proper serialization
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const transformedMovies = movies.map((movie: any) => ({
+      _id: movie._id.toString(),
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      release_date: movie.release_date,
+      runtime: movie.runtime,
+      genres: movie.genres?.map((genre: { id: number; name: string }) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
+      poster_path: movie.poster_path,
+      backdrop_path: movie.backdrop_path,
+      vote_average: movie.vote_average,
+      vote_count: movie.vote_count,
+      credits: movie.credits,
+      directors: movie.directors,
+      images: movie.images,
+      videos: movie.videos,
+      lastSyncedAt: movie.lastSyncedAt?.toISOString(),
+      image: movie.image,
+      year: movie.year,
+      link: movie.link,
+      userId: movie.userId?.toString(),
+      createdAt: movie.createdAt?.toISOString(),
+      updatedAt: movie.updatedAt?.toISOString(),
+    }));
+
     return NextResponse.json(
       {
-        data: movies,
+        data: transformedMovies,
         totalData: totalCount,
         message: "Movies retrieved successfully",
         success: true,
@@ -210,8 +242,38 @@ export async function POST(req: NextRequest) {
       lastSyncedAt: new Date(),
     });
 
+    // Transform the created movie to ensure proper serialization
+    const transformedMovie = {
+      _id: movie._id.toString(),
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      release_date: movie.release_date,
+      runtime: movie.runtime,
+      genres: movie.genres?.map((genre: { id: number; name: string }) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
+      poster_path: movie.poster_path,
+      backdrop_path: movie.backdrop_path,
+      vote_average: movie.vote_average,
+      vote_count: movie.vote_count,
+      credits: movie.credits,
+      directors: movie.directors,
+      images: movie.images,
+      videos: movie.videos,
+      lastSyncedAt: movie.lastSyncedAt?.toISOString(),
+      image: movie.image,
+      year: movie.year,
+      link: movie.link,
+      userId: movie.userId?.toString(),
+      createdAt: movie.createdAt?.toISOString(),
+      updatedAt: movie.updatedAt?.toISOString(),
+    };
+
     return NextResponse.json(
-      { data: movie, message: "Movie created successfully", success: true },
+      { data: transformedMovie, message: "Movie created successfully", success: true },
       { status: 200 }
     );
   } catch (error) {

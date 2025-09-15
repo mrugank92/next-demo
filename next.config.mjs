@@ -19,12 +19,17 @@ const nextConfig = {
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
-      { hostname: process.env.AWS_URL },
       {
         protocol: "https",
         hostname: "image.tmdb.org",
         port: "",
         pathname: "/t/p/**",
+      },
+      {
+        protocol: "https",
+        hostname: "movies-image.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/uploads/**",
       },
     ],
   },

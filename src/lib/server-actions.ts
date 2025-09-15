@@ -42,9 +42,7 @@ export async function fetchMoviesServerSide(page: number = 1): Promise<FetchMovi
     }
 
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; email: string };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const userId = decoded.userId;
+      jwt.verify(token, JWT_SECRET) as { userId: string; email: string };
     } catch {
       return {
         movies: [],
@@ -82,7 +80,10 @@ export async function fetchMoviesServerSide(page: number = 1): Promise<FetchMovi
       popularity: movie.popularity,
       release_date: movie.release_date,
       runtime: movie.runtime,
-      genres: movie.genres || [],
+      genres: movie.genres?.map((genre: { id: number; name: string }) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
       poster_path: movie.poster_path,
       backdrop_path: movie.backdrop_path,
       vote_average: movie.vote_average,
@@ -170,7 +171,10 @@ export async function fetchUserMoviesServerSide(userId: string, page: number = 1
       popularity: movie.popularity,
       release_date: movie.release_date,
       runtime: movie.runtime,
-      genres: movie.genres || [],
+      genres: movie.genres?.map((genre: { id: number; name: string }) => ({
+        id: genre.id,
+        name: genre.name
+      })) || [],
       poster_path: movie.poster_path,
       backdrop_path: movie.backdrop_path,
       vote_average: movie.vote_average,
