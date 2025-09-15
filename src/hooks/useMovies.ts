@@ -13,7 +13,10 @@ interface UseMoviesOptions {
   refreshInterval?: number;
   revalidateOnFocus?: boolean;
   revalidateOnReconnect?: boolean;
-  initialData?: FetchMoviesResponse;
+  initialData?: {
+    movies: Movie[];
+    totalData: number;
+  };
 }
 
 export function useMovies(options: UseMoviesOptions = {}) {
@@ -22,7 +25,15 @@ export function useMovies(options: UseMoviesOptions = {}) {
     refreshInterval = 0,
     revalidateOnFocus = true,
     revalidateOnReconnect = true,
+    initialData,
   } = options;
+
+  // Transform initial data to match API response format
+  const fallbackData = initialData ? {
+    success: true,
+    data: initialData.movies,
+    totalData: initialData.totalData,
+  } : undefined;
 
   const { data, error, isLoading, mutate, isValidating } =
     useSWR<FetchMoviesResponse>(`/api/movies?page=${page}`, {
@@ -31,6 +42,7 @@ export function useMovies(options: UseMoviesOptions = {}) {
       revalidateOnReconnect,
       revalidateIfStale: true,
       keepPreviousData: true,
+      fallbackData,
     });
 
   return {

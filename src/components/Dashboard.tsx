@@ -7,11 +7,22 @@ import Loading from "./Loading";
 import EmptyDashboard from "./EmptyDashboard";
 import DashboardHeader from "./Header";
 import { useMovies } from "@/hooks/useMovies";
+import { Movie } from "@/types/common";
 
 const PAGE_SIZE = 15;
 
-export default function DashBoard() {
-  const [currentPage, setCurrentPage] = useState<number>(1);
+interface DashboardProps {
+  initialMovies?: Movie[];
+  initialTotalData?: number;
+  initialPage?: number;
+}
+
+export default function DashBoard({ 
+  initialMovies = [], 
+  initialTotalData = 0, 
+  initialPage = 1
+}: DashboardProps) {
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedGenre, setSelectedGenre] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
@@ -23,7 +34,22 @@ export default function DashBoard() {
   // Use SWR with server-side initial data
   const { movies, totalData, isLoading, isError, error } = useMovies({
     page: currentPage,
+    initialData: {
+      movies: initialMovies,
+      totalData: initialTotalData
+    }
   });
+
+  // Ensure client-side state matches server-side state on hydration
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Use server-side data during SSR and initial hydration to prevent layout shift
+  const displayMovies = isHydrated ? movies : initialMovies;
+  const displayTotalData = isHydrated ? totalData : initialTotalData;
 
   // Reset to page 1 when any filter changes (only if filters become active)
   useEffect(() => {
@@ -41,7 +67,7 @@ export default function DashBoard() {
 
   // Filter movies based on current filters (no sorting)
   const filteredAndSortedMovies = useMemo(() => {
-    return movies.filter((movie) => {
+    return displayMovies.filter((movie) => {
       // Search term filter
       if (
         searchTerm &&
@@ -83,7 +109,7 @@ export default function DashBoard() {
 
       return true;
     });
-  }, [movies, searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
+  }, [displayMovies, searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
 
   // Check if any filters are active
   const hasActiveFilters = useMemo(() => {
@@ -97,8 +123,8 @@ export default function DashBoard() {
   }, [searchTerm, selectedGenre, selectedYear, minRating, maxRuntime]);
 
   const totalPages = useMemo(
-    () => Math.ceil(totalData / PAGE_SIZE),
-    [totalData]
+    () => Math.ceil(displayTotalData / PAGE_SIZE),
+    [displayTotalData]
   );
 
   if (isLoading) {
@@ -134,7 +160,7 @@ export default function DashBoard() {
     );
   }
 
-  if (!movies.length) {
+  if (!displayMovies.length) {
     return <EmptyDashboard />;
   }
 
@@ -158,7 +184,7 @@ export default function DashBoard() {
           showFilters={showFilters}
           setShowFilters={setShowFilters}
           setCurrentPage={setCurrentPage}
-          movies={movies}
+          movies={displayMovies}
           filteredAndSortedMovies={filteredAndSortedMovies}
         />
 
