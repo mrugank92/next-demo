@@ -5,12 +5,37 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { Resend } from "resend";
 import { EmailTemplate } from "@/components/templates/EmailTemplate";
-import { getClientIp } from "@/utils/getClientIp";
-import { consumeRateLimiter } from "@/utils/rateLimiter";
 import { validateRequest } from "@/utils/validateRequest";
 import { generateToken } from "@/utils/generateToken";
 import { formatResponse } from "@/utils/responseFormatter";
 import logger from "@/libs/logger";
+
+/**
+ * @swagger
+ * /api/auth/sign-up:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Sign up a new user
+ *     description: Create a new user account with email and password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SignUpRequest'
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SignUpResponse'
+ *       400:
+ *         description: Invalid input or user already exists
+ *       500:
+ *         description: Internal server error
+ */
 
 /**
  * @swagger
@@ -69,10 +94,6 @@ interface SignUpResponse {
 // Initialize Resend with API Key
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
-// Initialize the rate limiter
-// Note: If rateLimiter is shared, consider moving it to a common utility
-// Here, it's being used from rateLimiter.ts
-
 export async function POST(
 	req: NextRequest
 ): Promise<NextResponse<SignUpResponse>> {
@@ -95,25 +116,7 @@ export async function POST(
 				{ message: "Internal server error.", success: false },
 				500
 			);
-		}
-
-		// Rate limiting based on client IP
-		const clientIp = getClientIp(req);
-		try {
-			await consumeRateLimiter(clientIp);
-		} catch (error) {
-			logger.warn(error);
-			logger.warn(`Rate limit exceeded for IP: ${clientIp}`);
-			return formatResponse(
-				{
-					message: "Too many requests. Please try again later.",
-					success: false,
-				},
-				429
-			);
-		}
-
-		await connectMongoDB();
+		}await connectMongoDB();
 
 		// Validate request body using Zod
 		const validation = await validateRequest(

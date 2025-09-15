@@ -4,11 +4,38 @@ import User, { userSchemaZod } from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import logger from "@/libs/logger";
-import { getClientIp } from "@/utils/getClientIp";
 import { formatResponse } from "@/utils/responseFormatter";
 import { validateRequest } from "@/utils/validateRequest";
-import { consumeRateLimiter } from "@/utils/rateLimiter";
 import { generateToken } from "@/utils/generateToken";
+
+/**
+ * @swagger
+ * /api/auth/sign-in:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Sign in a user
+ *     description: Authenticate a user with email and password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SignInRequest'
+ *     responses:
+ *       200:
+ *         description: Sign-in successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SignInResponse'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
 
 /**
  * @swagger
@@ -24,10 +51,12 @@ import { generateToken } from "@/utils/generateToken";
  *           type: string
  *           format: email
  *           description: User's email address
+ *           example: user@gmail.com
  *         password:
  *           type: string
  *           format: password
  *           description: User's password
+ *           example: mymovies
  *     SignInResponse:
  *       type: object
  *       properties:
@@ -79,25 +108,7 @@ export async function POST(
                 { message: "Internal server error.", success: false },
                 500
             );
-        }
-
-        // Rate limiting based on client IP
-        const clientIp = getClientIp(req);
-        try {
-            await consumeRateLimiter(clientIp);
-        } catch (error) {
-            logger.warn(error);
-            logger.warn(`Rate limit exceeded for IP: ${clientIp}`);
-            return formatResponse(
-                {
-                    message: "Too many requests. Please try again later.",
-                    success: false,
-                },
-                429
-            );
-        }
-
-        await connectMongoDB();
+        }await connectMongoDB();
 
         // Validate request body using Zod
         const validation = await validateRequest(

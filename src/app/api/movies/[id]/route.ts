@@ -3,8 +3,6 @@ import connectMongoDB from "@/libs/dbConnect";
 import Movie, { movieSchemaZod } from "@/models/movie";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuth } from "@/libs/Auth";
-import { getClientIp } from "@/utils/getClientIp";
-import { consumeRateLimiter } from "@/utils/rateLimiter";
 import { validateRequest } from "@/utils/validateRequest";
 import { formatResponse } from "@/utils/responseFormatter";
 import logger from "@/libs/logger";
@@ -173,25 +171,7 @@ export async function GET(
         { message: "Unauthorized. You must log in first.", success: false },
         401
       );
-    }
-
-    // Rate limiting based on client IP
-    const clientIp = getClientIp(req);
-    try {
-      await consumeRateLimiter(clientIp);
-    } catch (error) {
-      logger.warn(error);
-      logger.warn(`Rate limit exceeded for IP: ${clientIp}`);
-      return formatResponse<undefined>(
-        {
-          message: "Too many requests. Please try again later.",
-          success: false,
-        },
-        429
-      );
-    }
-
-    // Connect to MongoDB
+    }// Connect to MongoDB
     await connectMongoDB();
 
     const { id } = await params;
@@ -275,25 +255,7 @@ export async function PATCH(
         { message: "Unauthorized. You must log in first.", success: false },
         401
       );
-    }
-
-    // Rate limiting based on client IP
-    const clientIp = getClientIp(req);
-    try {
-      await consumeRateLimiter(clientIp);
-    } catch (error) {
-      logger.warn(error);
-      logger.warn(`Rate limit exceeded for IP: ${clientIp}`);
-      return formatResponse<undefined>(
-        {
-          message: "Too many requests. Please try again later.",
-          success: false,
-        },
-        429
-      );
-    }
-
-    // Connect to MongoDB
+    }// Connect to MongoDB
     await connectMongoDB();
 
     const { id } = await params;
@@ -407,25 +369,7 @@ export async function DELETE(
         { message: "Unauthorized. You must log in first.", success: false },
         401
       );
-    }
-
-    // Rate limiting based on client IP
-    const clientIp = getClientIp(req);
-    try {
-      await consumeRateLimiter(clientIp);
-    } catch (error) {
-      logger.warn(error);
-      logger.warn(`Rate limit exceeded for IP: ${clientIp}`);
-      return formatResponse<undefined>(
-        {
-          message: "Too many requests. Please try again later.",
-          success: false,
-        },
-        429
-      );
-    }
-
-    // Connect to MongoDB
+    }// Connect to MongoDB
     await connectMongoDB();
 
     const { id } = await params;
