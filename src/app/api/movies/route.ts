@@ -2,6 +2,8 @@ import { isAuth } from "@/libs/Auth";
 import connectMongoDB from "@/libs/dbConnect";
 import Movie from "@/models/movie";
 import { NextRequest, NextResponse } from "next/server";
+import { movieSchema } from "@/lib/validations/movie";
+import { validateData } from "@/lib/validations/helpers";
 
 /**
  * @swagger
@@ -152,7 +154,21 @@ export async function POST(req: NextRequest) {
     await connectMongoDB();
     const body = await req.json();
 
-    // Extract all fields from the request body
+    // Validate request body with Zod
+    const validation = validateData(movieSchema.partial(), body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { 
+          data: null, 
+          message: "Validation failed", 
+          errors: validation.errors,
+          success: false 
+        },
+        { status: 400 }
+      );
+    }
+
+    // Extract all fields from the validated data
     const {
       id,
       title,
@@ -170,7 +186,7 @@ export async function POST(req: NextRequest) {
       image,
       year,
       link,
-    } = body;
+    } = validation.data;
 
     // Create movie with all fields and userId
     const movie = await Movie.create({

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "../../globals.css";
@@ -32,12 +30,12 @@ export const metadata: Metadata = {
 /**
  * Interface representing the expected parameters for RootLayout.
  */
-// interface RootLayoutProps {
-//   children: React.ReactNode;
-//   params: {
-//     locale: string;
-//   };
-// }
+interface RootLayoutProps {
+  children: React.ReactNode;
+  params: Promise<{
+    locale: string;
+  }>;
+}
 
 /**
  * RootLayout Component
@@ -45,7 +43,7 @@ export const metadata: Metadata = {
  * Serves as the root layout for the application, wrapping all pages.
  * Incorporates internationalization, global state management, and consistent theming.
  */
-export default async function RootLayout({ children, params }: any) {
+export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { locale } = await params;
 
   // Fetch localized messages based on the current locale

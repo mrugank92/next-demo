@@ -1,6 +1,7 @@
 import { createSwaggerSpec } from 'next-swagger-doc'
+import type { SwaggerSpec } from '@/types/swagger'
 
-export const getApiDocs = async () => {
+export const getApiDocs = async (): Promise<SwaggerSpec> => {
     const spec = createSwaggerSpec({
         apiFolder: 'src/app/api',
         definition: {
@@ -17,5 +18,5 @@ export const getApiDocs = async () => {
             security: [],
         },
     })
-    return spec
+    return spec as SwaggerSpec
 }
